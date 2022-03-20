@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializer import PostSerializer
 from .models import *
+from django.contrib.auth.models import User
 
 class PostView(APIView):
     
@@ -27,7 +28,15 @@ class PostView(APIView):
 
     def post(self,request,*args,**kwargs):
         try:
-            data = request.data
+            data = request.data.copy()
+
+            try:
+                
+                user =  User.objects.get(username=data.get('created_by'))
+                data['created_by'] = user.id
+            except Exception as e:
+                 return Response({'Message':'User does not exists'}, status =  status.HTTP_400_BAD_REQUEST)
+
             sobj =  PostSerializer(data = data)
             if sobj.is_valid():
                 sobj.save()
