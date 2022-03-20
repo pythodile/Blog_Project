@@ -9,6 +9,22 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+class Category(BaseModel):
+    category_id = models.AutoField(primary_key=True)
+    category_title = models.CharField(max_length=100)
+    category_slug = models.SlugField(max_length = 250, null = True, blank = True)
+
+    def __str__(self):
+        return self.category_slug
+
+class Tag(BaseModel):
+    tag_id = models.AutoField(primary_key=True)
+    tag_title = models.CharField(max_length=100)
+    tag_content = models.CharField(max_length=200)
+    
+    def __str__(self):
+        return self.tag_title
+
 class Post(BaseModel):
     STATUS_CHOICES = (
         ('draft', 'Draft'),
@@ -22,34 +38,12 @@ class Post(BaseModel):
     slug = models.SlugField(max_length = 250, null = True, blank = True)
     text = models.TextField()
     published_at = models.DateTimeField(auto_now_add = True)
+    category = models.ForeignKey(Category,on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag)
     status = models.CharField(max_length = 10, choices = STATUS_CHOICES,default ='draft')
-
-    class Meta:
-       ordering = ('-published_at', )
  
     def __str__(self):
         return self.title
-
-class Category(BaseModel):
-    category_id = models.AutoField(primary_key=True)
-    category_title = models.CharField(max_length=100)
-    category_slug = models.SlugField(max_length = 250, null = True, blank = True)
-
-class Tag(BaseModel):
-    tag_id = models.AutoField(primary_key=True)
-    tag_title = models.CharField(max_length=100)
-    tag_content = models.CharField(max_length=200)
-
-class PostTag(BaseModel):
-    post = models.ManyToManyField(Post)
-    tags = models.ManyToManyField(Tag)
-
-class PostCategory(BaseModel):
-    post = models.ManyToManyField(Post)
-    cat = models.ForeignKey(Category,on_delete=models.CASCADE)
-
-
-
 
 
 
