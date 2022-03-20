@@ -7,8 +7,7 @@ from django.contrib.auth.models import User
 class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+    comment_id = models.AutoField(primary_key=True)
     commented_by = models.ForeignKey(User, on_delete= models.CASCADE)
     post = models.ManyToManyField(Post)
     content = models.TextField()
-
-
